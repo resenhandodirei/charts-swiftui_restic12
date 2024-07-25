@@ -21,15 +21,57 @@ struct ContentView: View {
     
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 4) {
+            
+            Text("Helper Desk calls")
+            
+            Text("Total: \(viewMonths.reduce(0, { $0 + $1.viewCount}))")
+                .fontWeight(.semibold)
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 12)
+            
             Chart {
+                RuleMark(y: .value("Goal", 30000))
+                    .foregroundStyle(Color.mint)
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
+                    .annotation(alignment: .leading) {
+                        Text("Goal")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 ForEach(viewMonths) { viewMonth in
                     BarMark(
                         x: .value("Month", viewMonth.date, unit: .month),
                         y: .value("Views", viewMonth.viewCount)
                     )
+                    .foregroundStyle(Color.pink.gradient)
+                    
                 }
             }
+            .frame(height: 180)
+            .chartXAxis {
+                AxisMarks(values: viewMonths.map { $0.date }) { date in
+                    AxisGridLine()
+                    AxisTick()
+                    AxisValueLabel(format: .dateTime.month(.narrow), centered: true)
+                    
+                }
+            }
+            .chartYAxis {
+                AxisMarks { mark in
+                    AxisValueLabel()
+                    AxisGridLine()
+                }
+            }
+//            .chartXAxis(.hidden)
+            .chartYScale(domain: 0...30000)
+        
+//            .chartPlotStyle { plotContent in
+//                plotContent
+//                    .background(.black.gradient.opacity(0.3))
+//                    .border(.green, width: 3)
+//            }
         }
         .padding()
     }
