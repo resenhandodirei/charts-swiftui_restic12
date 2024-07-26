@@ -10,6 +10,16 @@ import Charts
 
 struct ContentView: View {
     
+    enum TimeFilter: String, CaseIterable, Identifiable {
+        case monthly = "Monthly"
+        case quarterly = "Quarterly"
+        case yearly = "Yearly"
+        
+        var id: String { self.rawValue }
+        
+        
+    }
+    
     let viewMonths: [ViewMonth] = [
         .init(date: Date.from(year: 2023, month: 1, day: 1), viewCount: 55000),
         .init(date: Date.from(year: 2023, month: 2, day: 1), viewCount: 45000),
@@ -64,17 +74,38 @@ struct ContentView: View {
                     AxisGridLine()
                 }
             }
-//            .chartXAxis(.hidden)
+            //            .chartXAxis(.hidden)
             .chartYScale(domain: 0...30000)
-        
-//            .chartPlotStyle { plotContent in
-//                plotContent
-//                    .background(.black.gradient.opacity(0.3))
-//                    .border(.green, width: 3)
-//            }
+            
+            //            .chartPlotStyle { plotContent in
+            //                plotContent
+            //                    .background(.black.gradient.opacity(0.3))
+            //                    .border(.green, width: 3)
+            //            }
         }
         .padding()
     }
+    
+    private func applyFilter() {
+            // Filter logic based on `selectedFilter`
+            switch selectedFilter {
+            case .monthly:
+                filteredViewMonths = allViewMonths
+            case .quarterly:
+                // Example: Filter by quarters
+                filteredViewMonths = allViewMonths.filter { month in
+                    let monthNumber = Calendar.current.component(.month, from: month.date)
+                    return monthNumber % 3 == 1
+                }
+            case .yearly:
+                // Example: Filter by year
+                filteredViewMonths = allViewMonths.filter { month in
+                    Calendar.current.component(.year, from: month.date) == 2023
+                }
+            }
+        }
+    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
